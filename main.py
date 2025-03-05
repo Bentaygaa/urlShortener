@@ -12,11 +12,13 @@ class Shortener():
         if x in range(52, 62):
             return chr(ord('0')+x-52)
 
-    def clearCounter(self, counter: list[int]) -> None:
+    def clearCounter(self) -> None:
+        counter = self.Counter
         for charI in range(len(counter)):
             counter[charI] = 0
     
-    def evaluate(self, counter) -> None:
+    def evaluate(self) -> None:
+        counter = self.Counter
         for i in range(len(counter)-1, -1, -1):
             if counter[i] == 61:
                 counter[i] = 0
@@ -25,14 +27,15 @@ class Shortener():
                 else:
                     counter[i-1] += 1
 
-    def incCounter(self, counter: list[int]) -> None:
+    def incCounter(self) -> None:
+        counter = self.Counter
         length = len(counter)
         counter[length-1] += 1
-        self.evaluate(counter)
+        self.evaluate()
 
-    def CounterToStr(self, counter: list[int]) -> str:
+    def CounterToStr(self) -> str:
         s = ''
-        print(counter)  
+        counter = self.Counter 
         for digit in counter:
             char = self.intToChar(digit)
             s += char
@@ -43,8 +46,11 @@ class Shortener():
             return self.DB[shorturl]
 
     def encodeAny(self, url: str) -> str:
-        self.incCounter(self.Counter)
-        shorturl = self.CounterToStr(self.Counter)
+        
+        self.incCounter()
+        while not self.isAvailableURL(self.CounterToStr()):
+            self.incCounter()
+        shorturl = self.CounterToStr()
         self.DB[shorturl] = url
         return shorturl
 
